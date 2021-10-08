@@ -3,7 +3,8 @@
 #define server_port 4950
 using namespace std;
 
-string msg = "GET / HTTP/1.0\n";
+string msg = "GET / HTTP/1.0\r\n \r\n";
+int n = 2;
 
 void service_socket(char sender_buffer[], int server_sock_fd, long int n = -1)
 {
@@ -99,8 +100,10 @@ int main()
 
         while (true) {
             // string to_send = create_vote_message(my_snode);
-            strcpy(sender_buffer, msg.c_str());
-            send(server_sock_fd, sender_buffer, strlen(sender_buffer), 0); // me -> server -> other clients
+            // strcpy(sender_buffer, msg.c_str());
+        send(server_sock_fd, msg.c_str(), strlen(msg.c_str()), 0); 
+        cout << id << " sent message" << endl;
+        sleep(2);
         }
 
     } 

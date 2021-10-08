@@ -14,7 +14,10 @@ int curr_no_of_clients = 0;
 void service_socket(int client_fd, fd_set *all_fds, int server_soc_fd, int last_fd)
 {
 	int rec_buffer_size;	
-	if ((rec_buffer_size = recv(client_fd, receiver_buffer, max_buf_size, 0)) == 0)
+	rec_buffer_size = recv(client_fd, receiver_buffer, max_buf_size, 0);
+	// cout << receiver_buffer << endl;
+	
+	if (rec_buffer_size == 0)
 	{ //client wants to close connection
 		close(client_fd);
 		FD_CLR(client_fd, all_fds); //set 0 to bit corresponding to this clients fd
@@ -22,10 +25,10 @@ void service_socket(int client_fd, fd_set *all_fds, int server_soc_fd, int last_
 	}
 	else
 	{   
+		
         map<string, string> request = parse_header(receiver_buffer);
-		cout << receiver_buffer << endl;
         // print_request(request);
-        // cout << "serving " << request["Path"] << " to client with port " << client_fd << endl;
+        cout << "serving " << request["Path"] << " to client with port " << client_fd << endl;
         send(client_fd, msg.c_str(), strlen(msg.c_str()), 0);	
 		memset(receiver_buffer, 0, max_buf_size);
 	}
@@ -56,7 +59,9 @@ void accept_client_connection(fd_set *all_fds, int *last_fd, int server_soc_fd, 
 		if (client_fd > *last_fd) // update the last fd/ no of active dfs
 			*last_fd = client_fd;
 
-		cout << "connected to new client with port " << client_fd << endl;
+		// cout << "connected to new client with port " << client_fd << endl;
+		// FD_CLR(server_soc_fd, all_fds);  
+
 	}
 }
 
@@ -116,6 +121,7 @@ int main()
 		}
 		for (i = 0; i < last_fd + 1; i++)
 		{ //iterate through list of fds
+			
 			if (FD_ISSET(i, &current_fds))
 			{							//check which socket sent data
 				if (i == server_soc_fd) // server accepting new client
