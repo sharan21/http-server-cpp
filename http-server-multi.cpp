@@ -21,16 +21,25 @@ void service_socket(int client_fd, fd_set *all_fds, int server_soc_fd, int last_
 		close(client_fd);
 		FD_CLR(client_fd, all_fds); //set 0 to bit corresponding to this clients fd
 		curr_no_of_clients[thread_number]--;
+		int sum =0;
+		for(int i=0;i<10;i++){
+			sum+= curr_no_of_clients[i];
+			cout<< curr_no_of_clients[i]<< ", ";
+		}
+		cout<<"Total : "<<sum;
 	}
 	else
 	{   
         map<string, string> request = parse_header(receiver_buffer);
         // print_request(request);
-        cout << "serving GET " << request["Path"] << " to client with port " << client_fd << endl;
+        //cout << "serving GET " << request["Path"] << " to client with port " << client_fd << endl;
+		if(request.size()<3){
+			return;
+		}
 		char * filehere = new char[2048]{'\0'};
 		getcwd(filehere, 2048);
 		strcpy (filehere + strlen(filehere), request["Path"].c_str());
-		cout<<filehere<<endl;
+		//cout<<filehere<<endl;
 		// send(client_fd, msg.c_str(), strlen(msg.c_str()), 0);	
 		send_file(client_fd, filehere);
 	}
@@ -68,7 +77,6 @@ void* client_handler(void *thread){
 	int thread_number = *((int*) thread);
 	while (true)
 	{
-		cout<<"Waiting for data on thread : "<<thread_number<<endl;
 		current_fds[thread_number] = all_fds[thread_number]; //update current set of fds, incase an fd has been added/ closed
 		struct timeval tv = { 0, 1000 }; //after 1 second select() will timeout
 		int rVal = select(last_fd[thread_number] + 1, &current_fds[thread_number], NULL, NULL, &tv);
@@ -78,17 +86,14 @@ void* client_handler(void *thread){
 			exit(1);
 		}
 		else if(rVal >0){
-			cout<<"Serving socket on thread "<<thread_number<<endl;
 			for (int i = 0; i < last_fd[thread_number] + 1; i++)
 			{ //iterate through list of fds
 				
 				if (FD_ISSET(i, &current_fds[thread_number]))
 				{
-					cout<<"Serving socket "<<i<<" on thread "<<thread_number<<endl;
 					service_socket(i, &all_fds[thread_number], server_soc_fd, last_fd[thread_number], thread_number); // a client has sent data to server
 				}
 			}
-			cout << "#clients: " << curr_no_of_clients << endl;
 		}
 		else{
 			usleep(1000);

@@ -56,7 +56,7 @@ int main()
         {
             connected_threads++;
         }
-        string msg = "GET /index.html HTTP/1.0 \r\n\r\n";
+        string msg = "GET /index.html HTTP/1.1 \r\n\r\n";
     
         while (true) {    
             send(server_sock_fd, msg.c_str(), strlen(msg.c_str()), 0); 
@@ -71,7 +71,7 @@ int main()
             {
                 cout << id << " received object of size: " << message_size << endl;
             }    
-            sleep(1);
+            usleep(1000);
         }
     } 
     return 0;
