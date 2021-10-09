@@ -27,7 +27,7 @@ int main()
         int id = omp_get_thread_num();        
         int server_sock_fd, last_fd, i;
         struct sockaddr_in server_addr;
-        struct timeval tv = { 1, 0 }; //after 1 second select() will timeout
+        struct timeval tv = { 0, 10 }; //after 1 second select() will timeout
         fd_set all_fds, current_fds;
 /********************************* SOCKET CREATION ******************************/
         usleep(id * 100); //to prevent DDoSsing yourself by sequentially adding threads to server
