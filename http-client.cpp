@@ -3,8 +3,6 @@
 #define server_port 4950
 using namespace std;
 
-int n = 2;
-
 
 void service_socket(char sender_buffer[], int server_sock_fd)
 {
@@ -16,7 +14,13 @@ void service_socket(char sender_buffer[], int server_sock_fd)
 int main()
 {
 /*********************** INIT GLOBAL FILES/OBJECTS *************************/
-    int connected_threads = 0;
+    int connected_threads = 0, n;
+    ifstream input_file;
+	input_file.open("inp-params.txt", ios::in);
+	input_file >> n;
+    cout << "#client: " << n << endl;
+    omp_set_num_threads(n);
+
 #pragma omp parallel
     {
 /**************************** INIT THREAD LOCAL VARS ***************************/
@@ -52,15 +56,9 @@ int main()
         {
             connected_threads++;
         }
-        // string msg;
-        string msg = "GET / HTTP/1.0 \r\n\r\n";
-        
-        
-        while (connected_threads != n);
-
+        string msg = "GET /index.html HTTP/1.0 \r\n\r\n";
+    
         while (true) {    
-             
-            
             send(server_sock_fd, msg.c_str(), strlen(msg.c_str()), 0); 
             #pragma omp critical
             {
@@ -73,7 +71,7 @@ int main()
             {
                 cout << id << " received object of size: " << message_size << endl;
             }    
-            sleep(2);
+            sleep(1);
         }
     } 
     return 0;

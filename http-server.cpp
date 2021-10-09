@@ -25,10 +25,12 @@ void service_socket(int client_fd, fd_set *all_fds, int server_soc_fd, int last_
         map<string, string> request = parse_header(receiver_buffer);
         // print_request(request);
         cout << "serving GET " << request["Path"] << " to client with port " << client_fd << endl;
-		char * filehere = new char(request["Path"].length()+1);
-		strcpy (filehere, request["Path"].c_str());
-		send(client_fd, msg.c_str(), strlen(msg.c_str()), 0);	
-		// send_file(client_fd, filehere);
+		char * filehere = new char[2048]{'\0'};
+		getcwd(filehere, 2048);
+		strcpy (filehere + strlen(filehere), request["Path"].c_str());
+		cout<<filehere<<endl;
+		// send(client_fd, msg.c_str(), strlen(msg.c_str()), 0);	
+		send_file(client_fd, filehere);
 		memset(receiver_buffer, 0, max_buf_size);
 	}
 }
@@ -121,6 +123,7 @@ int main()
 					service_socket(i, &all_fds, server_soc_fd, last_fd); // a client has sent data to server
 			}
 		}
+		cout << "#clients: " << curr_no_of_clients << endl;
 	}
 	return 0;
 }
