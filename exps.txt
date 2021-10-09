@@ -1,0 +1,35 @@
+#client: 5000
+All clients connected! #clients: 5000
+------ Mean requests processed per 10 seconds: 99425.2------
+------ Mean requests processed per 10 seconds: 99913.8------
+------ Mean requests processed per 10 seconds: 100619------
+99,985
+
+#client: 7000
+All clients connected! #clients: 7000
+------ Mean requests processed per 10 seconds: 99486.4------
+------ Mean requests processed per 10 seconds: 97924.6------
+------ Mean requests processed per 10 seconds: 97055.3------
+98,155
+
+#client: 9000
+All clients connected! #clients: 9000
+------ Mean requests processed per 10 seconds: 101497 ------
+------ Mean requests processed per 10 seconds: 96531.8 ------
+------ Mean requests processed per 10 seconds: 94326 ------
+97,451.6
+
+#client: 11000
+All clients connected! #clients: 11000
+------ Mean requests processed per 10 seconds: 100697 ------
+------ Mean requests processed per 10 seconds: 94846 ------
+------ Mean requests processed per 10 seconds: 93824.3 ------
+96,455
+
+#client: 13000
+All clients connected! #clients: 13000
+------ Mean requests processed per 10 seconds: 99472.2 ------
+------ Mean requests processed per 10 seconds: 92827 ------
+------ Mean requests processed per 10 seconds: 96607.7 ------
+96,302
+
