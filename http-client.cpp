@@ -20,7 +20,7 @@ int main()
 #pragma omp parallel
     {
 /**************************** INIT THREAD LOCAL VARS ***************************/
-        int id = omp_get_thread_num();        
+        // int id = omp_get_thread_num();        
         int server_sock_fd, last_fd, i;
         struct sockaddr_in server_addr;
         struct timeval tv = { 1, 0 }; //after 1 second select() will timeout

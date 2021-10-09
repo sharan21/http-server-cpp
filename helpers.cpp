@@ -15,7 +15,7 @@
 #include <unistd.h>
 #include <vector>
 #include <map>
-#include "omp.h"
+// #include "omp.h"
 
 using namespace std;
 
@@ -71,32 +71,33 @@ map<string, string> parse_header( void *msg )
 void send_file(int socket, char *file, bool fileSwitch=false)
 {
 	char *sendbuf;
+    string res, msg;
+
 	FILE *requested_file;
 	printf("Received request for file: %s on socket %d\n\n", file + 1, socket);
-	cout << file << endl;
-	if (fileSwitch) { requested_file = fopen(file + 1, "rb"); }
-	else { requested_file = fopen(file + 1, "r"); }
+	requested_file = fopen(file + 1, "rb");
 	
 	if (requested_file == NULL){
 		cout << "404 " << endl;
-		
+        msg = "HTTP/1.1 200 OK\r\n \r\n";
+        send(socket, msg.c_str(), strlen(msg.c_str()), 0);	
 	}
 	else 
 	{
-		printf("Hit else #1\n");
 		fseek (requested_file, 0, SEEK_END);
 		int fileLength = ftell(requested_file);
 		rewind(requested_file);
-		
-		sendbuf = (char*) malloc (sizeof(char)*fileLength);
+		char sendbuf[sizeof(char)*fileLength + 1];
 		size_t result = fread(sendbuf, 1, fileLength, requested_file);
-		
-		if (result > 0) {
-            write(socket , sendbuf , result);
-			// send(socket, sendbuf, result, 0);		
+		if (result <= 0) {
+            printf("Send error."); exit(1);
 		}		
-		else { printf("Send error."); exit(1); }
+        res = sendbuf;
+		msg = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length:" + to_string(res.length()) + "\r\n" + res;
+        send(socket, msg.c_str(), strlen(msg.c_str()), 0);	
+        free(sendbuf);   
 	}
+    
+    fclose(requested_file);
 	
-	fclose(requested_file);
 }
