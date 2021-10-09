@@ -3,8 +3,8 @@
 #define server_port 4950
 using namespace std;
 
-string msg = "GET / HTTP/1.0\r\n \r\n";
-int n = 100;
+int n = 2;
+
 
 void service_socket(char sender_buffer[], int server_sock_fd)
 {
@@ -20,7 +20,7 @@ int main()
 #pragma omp parallel
     {
 /**************************** INIT THREAD LOCAL VARS ***************************/
-        // int id = omp_get_thread_num();        
+        int id = omp_get_thread_num();        
         int server_sock_fd, last_fd, i;
         struct sockaddr_in server_addr;
         struct timeval tv = { 1, 0 }; //after 1 second select() will timeout
@@ -52,14 +52,19 @@ int main()
         {
             connected_threads++;
         }
+        // string msg;
+        string msg = "GET / HTTP/1.0 \r\n\r\n";
+        
+        
         while (connected_threads != n);
 
         while (true) {    
-            cout << "here" << endl;
+             
+            
             send(server_sock_fd, msg.c_str(), strlen(msg.c_str()), 0); 
             #pragma omp critical
             {
-                cout << id << " sent message" << endl;
+                cout << id << " sent request:" << msg << endl;
             }   
             char receiver_buffer[max_buf_size];
             int message_size = recv(server_sock_fd, receiver_buffer, max_buf_size, 0);

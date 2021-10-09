@@ -26,7 +26,7 @@ void service_socket(int client_fd, fd_set *all_fds, int server_soc_fd, int last_
         // print_request(request);
         cout << "serving GET " << request["Path"] << " to client with port " << client_fd << endl;
 		char * filehere = new char(request["Path"].length()+1);
-		std::strcpy (filehere, request["Path"].c_str());
+		strcpy (filehere, request["Path"].c_str());
 		send(client_fd, msg.c_str(), strlen(msg.c_str()), 0);	
 		// send_file(client_fd, filehere);
 		memset(receiver_buffer, 0, max_buf_size);
