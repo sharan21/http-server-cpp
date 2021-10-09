@@ -3,7 +3,6 @@
 #define server_port 4950
 using namespace std;
 
-
 void service_socket(char sender_buffer[], int server_sock_fd)
 {
     char receiver_buffer[max_buf_size];

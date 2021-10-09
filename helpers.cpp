@@ -17,7 +17,6 @@
 #include <map>
 #include <unordered_map>
 #include "omp.h"
-
 using namespace std;
 
 void print_request(map<string, string> req){
@@ -28,7 +27,6 @@ void print_request(map<string, string> req){
 
 map<string, string> parse_header( void *msg )
 {
-
     map<string, string> http_request;
     char *head = (char *) msg;
     char *mid;
@@ -57,58 +55,34 @@ map<string, string> parse_header( void *msg )
     while( *head++ != '\r');
     http_request[ "Version" ] = string( ( char * ) msg ).substr( tail - ( char *)msg , ( head - 1) - tail );
 
-    // Map all headers from a key to a value
-    /*while( true )
-    {
-        tail = head + 1;
-        while( *head++ != '\r' );
-        mid = strstr( tail, ":" );   
-
-        // Look for the failed strstr   
-        if( tail > mid )
-            break;
-
-        http_request[ string( ( char * ) msg ).substr( tail - ( char *)msg , ( mid ) - tail  ) ] = string( ( char * ) msg ).substr( mid + 2 - ( char *) msg , ( head - 3 ) - mid );
-    }*/
     return http_request;
 }
 
 
 void send_file(int socket, char *file, bool fileSwitch=false)
 {
-    // send(socket, msg.c_str(), strlen(msg.c_str()), 0);	
-    // return;
-	// char *sendbuf = "HTTP/1.1 200 OK\r\n \r\n";
-    // string res, msg;
-
+    string path = string(file, strlen(file));
+    string type = path.substr(path.find(".")+1);
 	FILE *requested_file;
-	//printf("Received request for file: %s on socket %d\n\n", file, socket);
+	printf("Received request for file: %s on socket %d\n\n", file, socket);
 	requested_file = fopen(file, "rb");
-	
 	if (requested_file == NULL){
-		cout << "404 " << endl;
+		cout << "404" << endl;
         string failed_msg = "HTTP/1.1 404 NOTFOUND\n\n \n\n";
-        // string msg = "HTTP/1.1 404 NOTFOUND \r\n \r\n";
         send(socket, failed_msg.c_str(), strlen(failed_msg.c_str()), 0);	
-        // free(sendbuf);
 	}
 	else 
 	{
 		fseek (requested_file, 0, SEEK_END);
 		int fileLength = ftell(requested_file);
 		rewind(requested_file);
-        
 		char sendbuf[sizeof(char)*fileLength + 1];
-		size_t result = fread(sendbuf, 1, fileLength, requested_file);
-		if (result <= 0) {
+		size_t len = fread(sendbuf, 1, fileLength, requested_file);
+		if (len <= 0) {
             printf("Send error."); exit(1);
         }
-        if(headers["type"] == "image/jpeg")
-        string msg = "HTTP/1.1 200 OK\nContent-Type: text/html\nContent-Length:" + to_string(result) + "\n\n" + sendbuf;
-		// msg = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length:" + to_string(res.length()) + "\r\n" + res;
+        string msg = "HTTP/1.1 200 OK\nContent-Type: text/" + type + "\nContent-Length:" + to_string(len) + "\n\n" + sendbuf;
         send(socket, msg.c_str(), strlen(msg.c_str()), 0);	 
         fclose(requested_file);
 	}
-    
-	
 }
